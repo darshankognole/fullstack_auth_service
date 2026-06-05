@@ -1,9 +1,13 @@
 package com.substring.auth.auth_app_backend.exceptions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
@@ -45,4 +49,16 @@ public class GlobalExceptionHandler {
 		ErrorResponse internalServerError = new ErrorResponse(exception.getMessage(), HttpStatus.NOT_FOUND);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(internalServerError);
 	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDeniedException(
+            AccessDeniedException ex
+    ) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.FORBIDDEN.value());
+        response.put("error", "Forbidden");
+        response.put("message", "You do not have permission to access this resource");
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
 }
